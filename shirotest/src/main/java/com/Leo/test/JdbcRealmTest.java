@@ -1,32 +1,38 @@
 package com.Leo.test;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.realm.SimpleAccountRealm;
+import org.apache.shiro.realm.jdbc.JdbcRealm;
+import org.apache.shiro.realm.text.IniRealm;
 import org.apache.shiro.subject.Subject;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @Auther: Leo
- * @Date: 2018/8/31 08:51
+ * @Date: 2018/9/4 15:25
  * @Description:
  */
-public class AuthenticationTest {
+public class JdbcRealmTest {
+    DruidDataSource dataSource = new DruidDataSource();
 
-    SimpleAccountRealm simpleAccountRealm = new SimpleAccountRealm();
-
-    @Before
-    public void addUser(){
-        simpleAccountRealm.addAccount("LEO","123456","admin");
+    {
+        dataSource.setUrl("jdbc:mysql://localhost/test");
+        dataSource.setUsername("root");
+        dataSource.setPassword("123456");
     }
+
 
     @Test
     public void testAuthentication(){
+
+        JdbcRealm jdbcRealm = new JdbcRealm();
+        jdbcRealm.setDataSource(dataSource);
+
         //1.构建SecurityManager环境
         DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager();
-        defaultSecurityManager.setRealm(simpleAccountRealm);
+        defaultSecurityManager.setRealm(jdbcRealm);
 
         //2.主体提交认证请求
         SecurityUtils.setSecurityManager(defaultSecurityManager);
@@ -37,13 +43,9 @@ public class AuthenticationTest {
 
         System.out.println("isAuthenticate:" + subject.isAuthenticated());
 
-/*
-        subject.logout();
+        subject.checkRole("admin");
 
-        System.out.println("isAuthenticate:" + subject.isAuthenticated());
-*/
+        subject.checkPermission("user:delete");
 
-        subject.checkRoles("admin");
     }
-
 }
