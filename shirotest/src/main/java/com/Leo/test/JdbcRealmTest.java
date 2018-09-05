@@ -25,10 +25,17 @@ public class JdbcRealmTest {
 
 
     @Test
-    public void testAuthentication(){
+    public void testAuthentication() {
 
         JdbcRealm jdbcRealm = new JdbcRealm();
         jdbcRealm.setDataSource(dataSource);
+        jdbcRealm.setPermissionsLookupEnabled(true);
+
+        String sql = "select password from test_user where user_name = ?";
+        jdbcRealm.setAuthenticationQuery(sql);
+
+        String roleSql = "select role_name from test_user_role where user_name = ?";
+        jdbcRealm.setUserRolesQuery(roleSql);
 
         //1.构建SecurityManager环境
         DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager();
@@ -38,14 +45,20 @@ public class JdbcRealmTest {
         SecurityUtils.setSecurityManager(defaultSecurityManager);
         Subject subject = SecurityUtils.getSubject();
 
-        UsernamePasswordToken token = new UsernamePasswordToken("LEO","123456");
+        UsernamePasswordToken token = new UsernamePasswordToken("xiaoming", "654321");
+
+        //UsernamePasswordToken token = new UsernamePasswordToken("LEO","123456");
         subject.login(token);
 
         System.out.println("isAuthenticate:" + subject.isAuthenticated());
 
-        subject.checkRole("admin");
+/*        subject.checkRole("admin");
 
-        subject.checkPermission("user:delete");
+        subject.checkRoles("admin","user");
+
+        subject.checkPermission("user:select");*/
+
+        subject.checkRole("user");
 
     }
 }
