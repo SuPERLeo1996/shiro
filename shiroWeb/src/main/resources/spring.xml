@@ -16,19 +16,33 @@
         <property name="filterChainDefinitions" >
             <value>
                 /login.html = anon
-
                 /subLogin = anon
+                /testRole = roles["admin"]
+                /testRole1 = roles["admin"]
+                /testPerms = perms["user:select"]
+                /testPerms1 = perms["user:select","user:delete"]
                 /* = authc
             </value>
         </property>
+
+        <property name="filters">
+            <map>
+                <entry key="rolesOr"  value-ref="rolesOrFilter"/>
+            </map>
+        </property>
+
     </bean>
+
+    <bean class="com.Leo.filter.RolesOrFilter" id="rolesOrFilter"/>
 
     <!--创建Security Manager对象-->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="realm" ref="realm"></property>
     </bean>
 
-    <bean id="realm" class="com.Leo.shiro.realm.CustomRealm"></bean>
+    <bean id="realm" class="com.Leo.shiro.realm.CustomRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher" ></property>
+    </bean>
 
     <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher" >
         <property name="hashAlgorithmName" value="md5"/>

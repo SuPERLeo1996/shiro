@@ -2,12 +2,12 @@ package com.Leo.dao.impl;
 
 import com.Leo.dao.UserDao;
 import com.Leo.vo.User;
-import jdk.nashorn.internal.ir.annotations.Reference;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Component
 public class UserDaoImpl implements UserDao {
-    @Reference
+    @Resource
     private JdbcTemplate jdbcTemplate;
 
     @Override
@@ -43,7 +43,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<String> queryRolesByUserName(String username) {
-        String sql = "select role_name,from user_roles where username = ?";
+        String sql = "select role_name from user_roles where username = ?";
         return jdbcTemplate.query(sql, new String[]{username}, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet resultSet, int i) throws SQLException {

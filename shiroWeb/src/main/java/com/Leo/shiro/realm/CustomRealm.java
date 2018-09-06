@@ -13,6 +13,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -22,7 +23,9 @@ import java.util.*;
  */
 public class CustomRealm extends AuthorizingRealm {
 
+    @Resource
     private UserDao userDao;
+
 
     //授权
     @Override
@@ -34,13 +37,13 @@ public class CustomRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.setStringPermissions(permissions);
         simpleAuthorizationInfo.setRoles(roles);
-        return null;
+        return simpleAuthorizationInfo;
     }
 
     private Set<String> getPermissionsByUserName(String username) {
         Set<String> sets = new HashSet<>();
+        sets.add("user:select");
         sets.add("user:delete");
-        sets.add("user:add");
         return sets;
     }
 
@@ -62,9 +65,10 @@ public class CustomRealm extends AuthorizingRealm {
             return null;
         }
 
-        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(username,password,"customRealm");
-        simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(username));
-        return simpleAuthenticationInfo;
+
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(username,password,"customRealm");
+        authenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(username));
+        return authenticationInfo;
     }
 
     /**

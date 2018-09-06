@@ -14,4 +14,11 @@
     <mvc:annotation-driven />
     
     <mvc:resources mapping="/*" location="/"/>
+
+    <aop:config proxy-target-class="true"/>
+    <bean class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"></property>
+    </bean>
 </beans>
